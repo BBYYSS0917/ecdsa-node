@@ -3,13 +3,15 @@ const app = express();
 const cors = require("cors");
 const port = 3042;
 
+const crypto=require("./scripts/crypto");
+
 app.use(cors());
 app.use(express.json());
 
 const balances = {
-  "0x1": 100,
-  "0x2": 50,
-  "0x3": 75,
+  "03815bf0ec559946a5a598128f7129bad86288fa": 100,
+  "f058b5fa6012ebdec2a3959724e29c72c532e0ac": 50,
+  "22c4c7765a52fb30d87424944bee413702fbdad7": 75,
 };
 
 app.get("/balance/:address", (req, res) => {
@@ -19,7 +21,13 @@ app.get("/balance/:address", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { sender, recipient, amount } = req.body;
+  // const { sender, recipient, amount } = req.body;
+  const {message,signature}=req.body;
+  const {recipient,amount}=message;
+
+  const publicKey=crypto.recoverPublicKey(message, signature);
+
+  const sender = crypto.pubKeyToAddress(publicKey);
 
   setInitialBalance(sender);
   setInitialBalance(recipient);

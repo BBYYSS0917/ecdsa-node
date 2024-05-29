@@ -1,5 +1,6 @@
 import { useState } from "react";
 import server from "./server";
+import wallet  from "./ClientLogic";
 
 function Transfer({ address, setBalance }) {
   const [sendAmount, setSendAmount] = useState("");
@@ -10,14 +11,22 @@ function Transfer({ address, setBalance }) {
   async function transfer(evt) {
     evt.preventDefault();
 
+    const message={
+      amount: parseInt(sendAmount),
+      recipient: recipient
+    };
+
+    const signature= await wallet.sign(address,message);
+    const transaction={
+      message: message,
+      signature: signature
+    }
+
+
     try {
       const {
         data: { balance },
-      } = await server.post(`send`, {
-        sender: address,
-        amount: parseInt(sendAmount),
-        recipient,
-      });
+      } = await server.post(`send`, transaction);
       setBalance(balance);
     } catch (ex) {
       alert(ex.response.data.message);
