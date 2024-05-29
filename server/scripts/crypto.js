@@ -1,30 +1,33 @@
 const { keccak256 } = require("ethereum-cryptography/keccak");
-const { utf8ToBytes } = require("ethereum-cryptography/utils");
+const { hexToBytes, toHex } = require("ethereum-cryptography/utils");
 const secp = require("ethereum-cryptography/secp256k1");
 
-function hashMessage(message) {
-    let bytes=utf8ToBytes(message);
-    return keccak256(bytes);
-}
+const hashMessage = (message) => keccak256(Uint8Array.from(message));
 
-async function signMessage(msg,privateKey) {
-    const messageHash = hashMessage(msg);
-    return secp.sign(messageHash, privateKey, { recovered: true });
-}
-
-async function recoverPublicKey(message, signature) {
+function recoverPublicKey(message, signature) {
     const hash = hashMessage(message);
+
+    console.log("hash:",hash);
     const fullSignatureBytes = hexToBytes(signature);
     const recoveryBit = fullSignatureBytes[0];
     const signatureBytes = fullSignatureBytes.slice(1);
+
+    console.log("signatureBytes:",signatureBytes);
+    console.log("toHex(signatureBytes)",toHex(signatureBytes));
+
+    console.log("recoveryBit:",recoveryBit);
   
     return secp.recoverPublicKey(hash, signatureBytes, recoveryBit);
 }
 
 
-const pubKeyToAddress = (pubKey) => {
-    const hash = keccak256(pubKey.slice(1));
-    return toHex(hash.slice(-20)).toUpperCase();
+const pubKeyToAddress = (publicKey) => {
+
+    console.log(toHex(publicKey));
+
+    return toHex(keccak256(publicKey.slice(1)).slice(-20));
+    // const hash = keccak256(publicKey.slice(1));
+    // return toHex(hash.slice(-20)).toUpperCase();
 };
 
 module.exports={

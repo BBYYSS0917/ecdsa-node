@@ -9,9 +9,9 @@ app.use(cors());
 app.use(express.json());
 
 const balances = {
-  "03815bf0ec559946a5a598128f7129bad86288fa": 100,
-  "f058b5fa6012ebdec2a3959724e29c72c532e0ac": 50,
-  "22c4c7765a52fb30d87424944bee413702fbdad7": 75,
+  "4b1ff8bd3d734a4bd54ef0d540d84320023c9a78": 100,
+  "11307d5607b3bd583aadb35aad0a8f4924d13cfd": 50,
+  "0d797b0a80a0984846980a7248c0cc247c8d6403": 75,
 };
 
 app.get("/balance/:address", (req, res) => {
@@ -28,6 +28,8 @@ app.post("/send", (req, res) => {
   const publicKey=crypto.recoverPublicKey(message, signature);
 
   const sender = crypto.pubKeyToAddress(publicKey);
+
+  console.log("sender:",sender);
 
   setInitialBalance(sender);
   setInitialBalance(recipient);

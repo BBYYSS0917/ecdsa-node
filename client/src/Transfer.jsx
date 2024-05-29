@@ -15,7 +15,7 @@ function Transfer({ address, setBalance }) {
       amount: parseInt(sendAmount),
       recipient: recipient
     };
-
+    
     const signature= await wallet.sign(address,message);
     const transaction={
       message: message,
